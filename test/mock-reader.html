@@ -1,0 +1,71 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Mock Kindle reader</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #f4ecd8; font-family: sans-serif; }
+  #root { position: relative; height: 100%; }
+  .kr-renderer-container-fullpage { position: absolute; inset: 0; z-index: -3; display: flex; align-items: center; justify-content: center; }
+  #kr-renderer { position: relative; width: 600px; height: 700px; }
+  #kr-renderer img, #kr-renderer canvas { display: block; width: 600px; height: 700px; }
+  #main-content { position: absolute; inset: 0; z-index: 0; transform: translate(0); }
+  ion-header { position: fixed; top: 0; left: 0; right: 0; height: 48px; z-index: 10; background: #222; color: #eee; display: flex; align-items: center; padding: 0 12px; gap: 12px; }
+  .pagination-container { position: absolute; inset: 0; }
+  .chevron { position: absolute; top: 50%; width: 40px; height: 80px; background: rgba(0,0,0,.2); border: 0; cursor: pointer; }
+  #kr-chevron-left { left: 8px; } #kr-chevron-right { right: 8px; }
+  .footer-label-color-dark { position: absolute; left: 0; right: 0; bottom: 0; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #444; }
+</style></head>
+<body>
+<div id="root">
+  <div class="kr-renderer-container-fullpage"><div id="kr-renderer"><div class="kg-view"><div><div class="kg-full-page-img" id="content"></div></div></div></div></div>
+  <ion-app><ion-split-pane><div id="main-content">
+    <ion-header id="reader-header"><span>Mock Book</span><button id="aa">Aa</button></ion-header>
+    <div class="kr-interaction-layer-fullpage"><div class="pagination-container">
+      <div class="kr-chevron-container-left"><button id="kr-chevron-left" class="chevron" aria-label="Previous page"></button></div>
+      <div class="kr-chevron-container-right"><button id="kr-chevron-right" class="chevron" aria-label="Next page"></button></div>
+    </div></div>
+    <div class="footer-label-color-dark"><ion-footer><ion-title class="footer-label position"><div class="text-div"><span id="loc">Page 1 of 60</span> <span>●</span> <span id="pct">1%</span></div></ion-title></ion-footer></div>
+  </div></ion-split-pane></ion-app>
+</div>
+<script>
+  const TOTAL = 60;
+  let page = 1, fontSize = 22, turning = false, generation = 0;
+  window.__mock = { turns: 0, wheelTurns: 0, get page() { return page; } };
+  function paint(canvas, n) {
+    canvas.width = 1200; canvas.height = 1400; // 2x for DPR-ish realism
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#f4ecd8'; ctx.fillRect(0, 0, 1200, 1400);
+    ctx.fillStyle = '#222'; ctx.font = `${fontSize * 2}px serif`;
+    const lines = Math.floor(1400 / (fontSize * 2 * 1.5));
+    for (let i = 0; i < lines; i++) ctx.fillText(`Page ${n} · line ${i + 1} · lorem ipsum dolor sit amet`, 40, 60 + i * fontSize * 2 * 1.5);
+    ctx.fillStyle = '#c00'; ctx.fillRect(0, 1390, 1200, 10); // page-bottom marker
+  }
+  async function show(n) {
+    const gen = ++generation;
+    const content = document.getElementById('content');
+    const canvas = document.createElement('canvas');
+    paint(canvas, n);
+    content.replaceChildren(canvas);
+    document.getElementById('loc').textContent = `Page ${n} of ${TOTAL}`; document.getElementById('pct').textContent = `${Math.round(n / TOTAL * 100)}%`;
+    await new Promise((r) => setTimeout(r, 120)); // simulate canvasToImage
+    if (gen !== generation) return;
+    const blob = await new Promise((r) => canvas.toBlob(r, 'image/png'));
+    const img = new Image();
+    img.src = URL.createObjectURL(blob);
+    await img.decode();
+    if (gen !== generation) return;
+    canvas.replaceWith(img);
+  }
+  function go(delta) {
+    const n = page + delta;
+    if (n < 1 || n > TOTAL || turning) return;
+    turning = true; page = n; window.__mock.turns++;
+    show(n).finally(() => { turning = false; });
+  }
+  document.getElementById('kr-chevron-right').addEventListener('click', (e) => go(1));
+  document.getElementById('kr-chevron-left').addEventListener('click', (e) => go(-1));
+  document.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') go(1); if (e.key === 'ArrowLeft') go(-1); if (e.key === ' ') go(1); });
+  document.addEventListener('wheel', (e) => { window.__mock.wheelTurns++; go(e.deltaY > 0 ? 1 : -1); });
+  document.getElementById('aa').addEventListener('click', () => { fontSize = fontSize === 22 ? 30 : 22; show(page); });
+  window.__mock.goto = (n) => { page = n; show(n); };
+  show(1);
+</script>
+</body></html>

@@ -1,0 +1,95 @@
+/* Kindle Vertical Scroll — overlay styles. Everything is namespaced under #kvs-* */
+
+#kvs-wrap {
+  /* position, z-index and geometry are set inline by page.js (mounted inside the reader's UI layer) */
+  left: 0;
+  top: 0;
+  background: var(--kvs-bg, #fff);
+  --kvs-fg: rgba(0, 0, 0, 0.75);
+  --kvs-accent: #f90;
+  --kvs-shadow: rgba(0, 0, 0, 0.25);
+  user-select: none;
+  -moz-user-select: none;
+}
+#kvs-wrap[data-theme="dark"] {
+  --kvs-fg: rgba(255, 255, 255, 0.8);
+  --kvs-shadow: rgba(0, 0, 0, 0.6);
+}
+
+#kvs-root {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  overflow-anchor: none;   /* we adjust scrollTop ourselves when prepending */
+  scrollbar-width: thin;
+  outline: none;
+}
+
+#kvs-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  min-height: 100%;
+}
+
+.kvs-slot {
+  flex: none;
+  display: block;
+  position: relative;
+}
+.kvs-slot img {
+  display: block;
+  image-rendering: auto;
+  pointer-events: none;
+}
+#kvs-wrap[data-seams="1"] .kvs-slot::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  border-bottom: 1px dashed rgba(255, 0, 0, 0.35);
+}
+
+#kvs-end {
+  padding: 48px 0 96px;
+  font: 14px system-ui, sans-serif;
+  color: var(--kvs-fg);
+  opacity: 0.7;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+#kvs-progress {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 3px;
+  background: color-mix(in srgb, var(--kvs-fg) 15%, transparent);
+  pointer-events: none;
+}
+#kvs-progress-bar {
+  height: 100%;
+  width: 0;
+  background: var(--kvs-accent);
+  transition: width 200ms ease-out;
+}
+
+#kvs-pill {
+  /* position and z-index are set inline by page.js */
+  right: 16px;
+  bottom: 16px;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 999px;
+  font: 600 12px system-ui, sans-serif;
+  color: #fff;
+  background: rgba(30, 30, 30, 0.85);
+  box-shadow: 0 2px 8px var(--kvs-shadow, rgba(0, 0, 0, 0.3));
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 150ms;
+}
+#kvs-pill:hover,
+#kvs-pill[data-state="busy"] { opacity: 1; }
+#kvs-pill[data-state="busy"] { cursor: progress; }

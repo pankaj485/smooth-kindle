@@ -1,0 +1,105 @@
+{
+  "manifest_version": 3,
+  "name": "Kindle Vertical Scroll",
+  "version": "0.2.0",
+  "description": "Continuous vertical scrolling for the Kindle web reader (read.amazon.*), like the mobile app.",
+  "icons": {
+    "48": "icons/icon.svg",
+    "96": "icons/icon.svg"
+  },
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://read.amazon.com/*",
+    "https://read.amazon.in/*",
+    "https://read.amazon.co.uk/*",
+    "https://read.amazon.co.jp/*",
+    "https://read.amazon.de/*",
+    "https://read.amazon.fr/*",
+    "https://read.amazon.es/*",
+    "https://read.amazon.it/*",
+    "https://read.amazon.ca/*",
+    "https://read.amazon.com.au/*",
+    "https://read.amazon.com.br/*",
+    "https://read.amazon.com.mx/*"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "action": {
+    "default_title": "Toggle Kindle vertical scroll (Alt+Shift+S)",
+    "default_icon": {
+      "48": "icons/icon.svg",
+      "96": "icons/icon.svg"
+    }
+  },
+  "commands": {
+    "toggle-scroll-mode": {
+      "suggested_key": {
+        "default": "Alt+Shift+S"
+      },
+      "description": "Toggle continuous vertical scroll mode"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://read.amazon.com/*",
+        "https://read.amazon.in/*",
+        "https://read.amazon.co.uk/*",
+        "https://read.amazon.co.jp/*",
+        "https://read.amazon.de/*",
+        "https://read.amazon.fr/*",
+        "https://read.amazon.es/*",
+        "https://read.amazon.it/*",
+        "https://read.amazon.ca/*",
+        "https://read.amazon.com.au/*",
+        "https://read.amazon.com.br/*",
+        "https://read.amazon.com.mx/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "styles.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "page.js"
+      ],
+      "matches": [
+        "https://read.amazon.com/*",
+        "https://read.amazon.in/*",
+        "https://read.amazon.co.uk/*",
+        "https://read.amazon.co.jp/*",
+        "https://read.amazon.de/*",
+        "https://read.amazon.fr/*",
+        "https://read.amazon.es/*",
+        "https://read.amazon.it/*",
+        "https://read.amazon.ca/*",
+        "https://read.amazon.com.au/*",
+        "https://read.amazon.com.br/*",
+        "https://read.amazon.com.mx/*"
+      ]
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "kindle-vertical-scroll@pank.local",
+      "strict_min_version": "115.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    }
+  }
+}

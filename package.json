@@ -1,0 +1,17 @@
+{
+  "name": "kindle-vertical-scroll",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Firefox extension adding continuous vertical scrolling to the Kindle web reader.",
+  "scripts": {
+    "start": "web-ext run -s extension --start-url https://read.amazon.in/",
+    "lint": "web-ext lint -s extension",
+    "build": "web-ext build -s extension --overwrite-dest",
+    "test": "node test/run.mjs",
+    "live": "node test/live.mjs"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^25.11.0",
+    "web-ext": "^8.0.0"
+  }
+}
